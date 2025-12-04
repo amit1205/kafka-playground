@@ -4,6 +4,7 @@ Sample project showcasing kafka use-cases
 # Architecture Diagram
 
 ![](./assets/images/kafka-arch.png)
+
 ---
 
 # End to End testing flow
