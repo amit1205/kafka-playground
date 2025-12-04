@@ -6,18 +6,18 @@ import (
 	"log"
 	"time"
 
-	"github.com/segmentio/kafka-go"
+	kafkago "github.com/segmentio/kafka-go"
 
-	"github.com/amit1205/kafka-playground/internal/kafka"
+	config "github.com/amit1205/kafka-playground/internal/kafka"
 	"github.com/amit1205/kafka-playground/internal/model"
 )
 
 func main() {
-	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:        []string{kafka.BootstrapServers},
-		Topic:          kafka.OrderTopic,
-		GroupID:        kafka.OrderGroupID,
-		CommitInterval: time.Second, // commit offsets every second
+	reader := kafkago.NewReader(kafkago.ReaderConfig{
+		Brokers:        []string{config.BootstrapServers},
+		Topic:          config.OrderTopic,
+		GroupID:        config.OrderGroupID,
+		CommitInterval: time.Second,
 		MinBytes:       1,
 		MaxBytes:       10e6,
 	})
@@ -29,7 +29,7 @@ func main() {
 	}()
 
 	log.Printf("Starting order consumer. Topic=%q GroupID=%q",
-		kafka.OrderTopic, kafka.OrderGroupID)
+		config.OrderTopic, config.OrderGroupID)
 
 	ctx := context.Background()
 
@@ -37,7 +37,6 @@ func main() {
 		msg, err := reader.ReadMessage(ctx)
 		if err != nil {
 			log.Printf("error reading message: %v", err)
-			// In a real service you’d handle retries / backoff / shutdown.
 			continue
 		}
 
@@ -52,14 +51,8 @@ func main() {
 }
 
 func processOrder(o model.Order) {
-	// Simulate doing something meaningful with the order.
 	log.Printf("[PROCESSOR] Received order: ID=%s User=%s Amount=%.2f %s Status=%s",
 		o.ID, o.UserID, o.Amount, o.Currency, o.Status)
 
-	// Here you could:
-	//   - Charge payment
-	//   - Update inventory
-	//   - Publish another Kafka event: OrderPaid, OrderFailed, etc.
-	//   - Update a DB
 	time.Sleep(200 * time.Millisecond)
 }

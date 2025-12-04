@@ -8,20 +8,20 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/segmentio/kafka-go"
+	kafkago "github.com/segmentio/kafka-go"
 
-	"github.com/amit1205/kafka-playground/internal/kafka"
+	config "github.com/amit1205/kafka-playground/internal/kafka"
 	"github.com/amit1205/kafka-playground/internal/model"
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	writer := &kafka.Writer{
-		Addr:         kafka.TCP(kafka.BootstrapServers),
-		Topic:        kafka.OrderTopic,
-		Balancer:     &kafka.LeastBytes{},
-		RequiredAcks: kafka.RequireAll,
+	writer := &kafkago.Writer{
+		Addr:         kafkago.TCP(config.BootstrapServers),
+		Topic:        config.OrderTopic,
+		Balancer:     &kafkago.LeastBytes{},
+		RequiredAcks: kafkago.RequireAll,
 		Async:        false,
 	}
 
@@ -31,7 +31,7 @@ func main() {
 		}
 	}()
 
-	log.Printf("Starting order producer. Writing to topic %q", kafka.OrderTopic)
+	log.Printf("Starting order producer. Writing to topic %q", config.OrderTopic)
 
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
@@ -44,7 +44,7 @@ func main() {
 			continue
 		}
 
-		msg := kafka.Message{
+		msg := kafkago.Message{
 			Key:   []byte(order.ID),
 			Value: payload,
 		}
@@ -63,7 +63,7 @@ func randomOrder() model.Order {
 	return model.Order{
 		ID:        fmt.Sprintf("order-%d", rand.Intn(1000000)),
 		UserID:    fmt.Sprintf("user-%d", rand.Intn(100)),
-		Amount:    10 + rand.Float64()*90, // 10–100
+		Amount:    10 + rand.Float64()*90,
 		Currency:  "USD",
 		CreatedAt: time.Now().UTC(),
 		Status:    "CREATED",

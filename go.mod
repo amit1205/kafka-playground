@@ -1,4 +1,4 @@
-module github.com/amit1205/kafka-playgorund
+module github.com/amit1205/kafka-playground
 
 go 1.23.1
 
